@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import "../CompanyPrdct.css";
 import { StoreContext } from "../../Context/context";
+import { getImageUrl } from "../../ApiCalls/ApiCalls";
+
 
 export const IphonePrdct = () => {
     let { allItems, cartData, AddToCart, SubFrmCart } = useContext(StoreContext);
@@ -24,7 +26,8 @@ export const IphonePrdct = () => {
                                 IphoneProducts.map((v, i) => {
                                     return (
                                         <div key={i} className="cmpny-Prdct-Crd">
-                                            <img src={`${v.image}`} alt="prdctImg" className="prdctImg" />
+                                            <img src={getImageUrl(v.image)} alt="prdctImg" className="prdctImg" />
+
                                             <div className="desc-div">
                                                 <div className="nameAndcompany">
                                                     <b>{v.name}</b>

@@ -2,6 +2,8 @@ import { MongoClient } from "mongodb";
 import * as fun from "../Functions/Functions.js";
 import fs from "fs";
 import path from "path";
+import { cloudinary } from "../Config/cloudinary.js";
+
 const client = new MongoClient(process.env.DB_URL);
 const db = client.db(process.env.DB);
 const PColl = db.collection(process.env.P_C);
@@ -14,7 +16,8 @@ const OColl = db.collection(process.env.O_C);
 export const AddProduct = async (req, res) => {
     try {
         let id = await fun.idGen(PColl);
-        await PColl.insertOne({ id, name: req.body.productName, company: req.body.productCompany, number: req.body.productNum, price: req.body.productPrice, image: req.file.filename });
+        await PColl.insertOne({ id, name: req.body.productName, company: req.body.productCompany, number: req.body.productNum, price: req.body.productPrice, image: req.file.path });
+
         res.json({ success: true, message: "Product added Successfully" });
     } catch (error) {
         res.json({ success: false, message: "Error Occured" });
@@ -34,7 +37,15 @@ export const GetAllPrdct = async (req, res) => {
 // Function that helpp to delte Item from PColl;
 export const delItmByAdm = async (req, res) => {
     try {
-        fs.unlinkSync(`${path.resolve("Products")}/${req.body.image}`);
+        const image = req.body.image;
+        if (image.startsWith("http")) {
+            // Delete from Cloudinary
+            const publicId = image.split('/').slice(-3).join('/').split('.')[0];
+            await cloudinary.uploader.destroy(publicId);
+        } else {
+            // Legacy: Delete from local filesystem
+            fs.unlinkSync(`${path.resolve("Products")}/${image}`);
+        }
         await PColl.deleteOne({ id: req.body.id });
         await fun.correctingSeries(PColl);
         res.json({ success: true });
@@ -42,6 +53,7 @@ export const delItmByAdm = async (req, res) => {
         res.json({ success: false, message: "Something went wrong." })
     }
 }
+
 
 // Function that help to GET all orders:
 export const GetAllOrdrs = async (req, res) => {
@@ -61,11 +73,19 @@ export const delOrdrByAdm = async (req, res) => {
         await OColl.deleteMany({ orderId: req.body.orderId });
         res.json({ success: true });
     } else {
-        fs.unlinkSync(`${path.resolve("Scripts")}/${req.body.image}`);
+        if (image.startsWith("http")) {
+            // Delete from Cloudinary
+            const publicId = image.split('/').slice(-3).join('/').split('.')[0];
+            await cloudinary.uploader.destroy(publicId);
+        } else {
+            // Legacy: Delete from local filesystem
+            fs.unlinkSync(`${path.resolve("Scripts")}/${image}`);
+        }
         await OColl.deleteMany({ orderId: req.body.orderId });
         res.json({ success: true });
     }
 }
+
 
 //%%%%%%%%%% USER CONTROLLER %%%%%%%%%%\\
 
@@ -140,6 +160,7 @@ export const AddUserAddress = async (req, res) => {
 export const AddUserAddressBt = async (req, res) => {
     let orderId = fun.getEncrptdDta(req.body.orderId);
     let orderKey = fun.getEncrptdDta(req.body.ordrKey);
-    await OColl.updateOne({ orderId: orderId.data, orderKey: orderKey.data }, { $set: { userAdd: req.body.Address, scriptImg: req.file.filename } });
+    await OColl.updateOne({ orderId: orderId.data, orderKey: orderKey.data }, { $set: { userAdd: req.body.Address, scriptImg: req.file.path } });
+
     res.json({ success: true });
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { HeaderComp } from "../../Components/Header/header"
 import { SideNavbar } from "../../Components/SideNav/sidenav"
 import "./Allitems.css"
-import { getAllItems, baseUrl, delItmByAdm } from "../../ApiCalls/ApiCalls"
+import { getAllItems, baseUrl, delItmByAdm, getImageUrl } from "../../ApiCalls/ApiCalls"
 export const AllItemsPage = () => {
     let [Allitems, setAllItems] = useState();
     useEffect(() => {
@@ -25,7 +25,8 @@ export const AllItemsPage = () => {
                         Allitems.map((v, i) => {
                             return (
                                 <div className="itms-Cont" key={i}>
-                                    <img src={`${baseUrl}/pr0ducts/${v.image}`} alt="Item Pic" />
+                                    <img src={getImageUrl(v.image)} alt="Item Pic" />
+
                                     <p>{v.name}</p>
                                     <p>{v.price}</p>
                                     <button className="del-btn" onClick={() => delItmByAdm(v.image, v.id)}>x</button>

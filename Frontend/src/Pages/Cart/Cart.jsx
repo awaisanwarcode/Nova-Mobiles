@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { Navbar } from "../../Components/Navbar/navbar";
 import "./Cart.css";
-import { baseUrl, getCartData, moveToplaceOrder } from "../../ApiCalls/ApiCalls";
+import { baseUrl, getCartData, getImageUrl, moveToplaceOrder } from "../../ApiCalls/ApiCalls";
+
 import { toast, ToastContainer } from "react-toastify";
 export const CartPage = () => {
     let orderId = JSON.parse(localStorage.getItem("OdeItn"));
@@ -50,7 +51,8 @@ export const CartPage = () => {
                                         <span className="rowElem imgAndName">
                                             <b className="title">Image/Name : </b>
                                             <div>
-                                                <img src={`${baseUrl}/pr0ducts/${v.image}`} />
+                                                <img src={getImageUrl(v.image)} />
+
                                                 <b>{v.name}</b>
                                             </div>
                                         </span>

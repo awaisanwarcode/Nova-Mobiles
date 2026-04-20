@@ -2,6 +2,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 export const baseUrl = "http://localhost:4000";
 
+export const getImageUrl = (image, type = "products") => {
+    if (!image) return "";
+    if (image.startsWith("http")) return image;
+    const folder = type === "products" ? "pr0ducts" : "$rpt";
+    return `${baseUrl}/${folder}/${image}`;
+};
+
+
 export const getAllProducts = (setAllItems) => {
     axios.get(`${baseUrl}/get/all/itms`)
         .then((res) => {

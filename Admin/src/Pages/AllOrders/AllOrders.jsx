@@ -3,7 +3,8 @@ import { HeaderComp } from "../../Components/Header/header";
 import { SideNavbar } from "../../Components/SideNav/sidenav";
 import "./AllOrders.css";
 import { useState } from "react";
-import { baseUrl, delOrdrbyAdm, getAllOrders } from "../../ApiCalls/ApiCalls";
+import { baseUrl, delOrdrbyAdm, getAllOrders, getImageUrl } from "../../ApiCalls/ApiCalls";
+
 export const OrdersPage = () => {
     let [Orders, setOrders] = useState(undefined);
     useEffect(() => {
@@ -51,9 +52,10 @@ export const OrdersPage = () => {
                                             ?
                                             <>
                                                 <b>Payment Method</b>
-                                                <a href={`${baseUrl}/$rpt/${v.scriptImg}`}>
-                                                    <img src={`${baseUrl}/$rpt/${v.scriptImg}`} />
+                                                <a href={getImageUrl(v.scriptImg, "scripts")}>
+                                                    <img src={getImageUrl(v.scriptImg, "scripts")} />
                                                 </a>
+
                                                 <p>Click the Image to review</p>
                                                 <button className="ordrBtns delBtn" onClick={() => delOrdrbyAdm(v.orderId, v.scriptImg)}>Delete Order</button>
                                             </>

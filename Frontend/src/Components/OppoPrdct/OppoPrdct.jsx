@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import "../CompanyPrdct.css";
 import { StoreContext } from "../../Context/context";
+import { getImageUrl } from "../../ApiCalls/ApiCalls";
+
 import { baseUrl } from "../../ApiCalls/ApiCalls";
 
 export const OppoPrdct = () => {
@@ -25,7 +27,8 @@ export const OppoPrdct = () => {
                                 OppoProducts.map((v, i) => {
                                     return (
                                         <div key={i} className="cmpny-Prdct-Crd">
-                                            <img src={`${v.image}`} alt="prdctImg" className="prdctImg" />
+                                            <img src={getImageUrl(v.image)} alt="prdctImg" className="prdctImg" />
+
                                             <div className="desc-div">
                                                 <div className="nameAndcompany">
                                                     <b>{v.name}</b>
