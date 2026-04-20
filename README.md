@@ -1,95 +1,111 @@
 # Nova Mobiles
 
-Nova Mobiles is a full-stack phone store project with three separate apps:
+Nova Mobiles is a full-stack mobile store project split into three apps:
 
-- `Frontend` for the customer-facing shopping experience
-- `Admin` for product and order management
-- `Backend` for the API, file uploads, and MongoDB persistence
+- `Frontend` is the customer storefront.
+- `Admin` is the internal dashboard for products and orders.
+- `Backend` is the Express API backed by MongoDB and Cloudinary uploads.
 
-The project is built with React + Vite on the frontend/admin side and Express + MongoDB on the backend.
+The frontend and admin apps use React + Vite. The backend uses Express 5, the MongoDB Node driver, Multer, JSON Web Token, and Cloudinary storage.
 
-## Project Structure
+## Repository Layout
 
 ```text
 Nova-Mobiles/
 |-- Admin/      # Admin dashboard
-|-- Backend/    # Express API + MongoDB + uploaded files
+|-- Backend/    # API, MongoDB access, upload handling
 |-- Frontend/   # Customer storefront
 `-- README.md
 ```
 
-## What The Codebase Does
+## What Each App Does
 
-### Customer app (`Frontend`)
+### Frontend
 
-- Displays products grouped by company/brand
-- Lets users add items to a local cart
-- Creates an order record before checkout
-- Loads cart data from the backend using an encrypted order id
-- Lets users continue to the delivery/payment form
-- Supports:
-  - Cash on Delivery
-  - Self Pick
-  - Bank Transfer with payment proof image upload
+- Shows products grouped by brand.
+- Lets shoppers build a cart in local React state.
+- Creates an order shell in the backend before checkout.
+- Loads cart contents again using an encrypted order token.
+- Supports checkout with:
+  - `Cash on Delivery`
+  - `Self Pick`
+  - `Bank Transfer` with proof image upload
 
-Routes in the customer app:
+Frontend routes:
 
-- `/` home page
-- `/cart` cart review page
-- `/pay` delivery and payment form
+- `/`
+- `/cart`
+- `/pay`
 
-### Admin app (`Admin`)
+### Admin
 
-- Add new products with image upload
-- View all products
-- Delete products
-- View all submitted orders
-- Review bank transfer proof images
-- Delete completed/cancelled orders
+- Add a product with image upload.
+- View all products.
+- Delete products.
+- View submitted orders.
+- Review bank transfer proof images.
+- Delete processed orders.
 
-Routes in the admin app:
+Admin routes:
 
-- `/` add item page
-- `/prdct/all` all products page
-- `/ordrs/All` all orders page
+- `/`
+- `/prdct/all`
+- `/ordrs/All`
 
-### Backend (`Backend`)
+### Backend
 
-The API provides:
+The backend exposes endpoints for:
 
-- product creation with `multer` image upload
-- product listing
-- product deletion
-- order creation
-- cart retrieval by encrypted order id
-- checkout/cart update
-- order cancellation
-- address submission
-- bank transfer proof upload
-- static serving for uploaded product images and payment proof images
+- creating products
+- listing products
+- deleting products
+- creating cart/order records
+- retrieving cart data by encrypted order id
+- updating the cart before checkout
+- canceling orders
+- submitting address details
+- uploading bank transfer proof images
 
-Static files served by the backend:
+API routes currently defined in [`Backend/Router/Router.js`](/c:/Users/PMLS/Desktop/Nova-Mobiles/Backend/Router/Router.js):
 
-- `/pr0ducts` -> files in `Backend/Products`
-- `/$rpt` -> files in `Backend/Scripts`
+- `POST /Ad/prdct/Add`
+- `GET /Ad/prdct/All`
+- `GET /Ad/ordrs/all`
+- `POST /del/prdct/Admn`
+- `POST /Ad/del/ordr`
+- `GET /get/all/itms`
+- `POST /add/cartdata`
+- `POST /get/cartData`
+- `POST /proceed/Payment`
+- `POST /cancel/ordr`
+- `POST /Add/Address/Smpl`
+- `POST /Add/Address/Bt`
 
-## Main Tech Stack
+## Tech Stack
 
 - React 19
-- Vite
-- React Router
+- React Router 7
+- Vite 7
 - Axios
 - React Toastify
 - Express 5
 - MongoDB Node driver
 - Multer
 - JSON Web Token
+- Cloudinary
 - Argon2
 - Zod
 
+## Prerequisites
+
+- Node.js 20+
+- npm
+- MongoDB instance
+- Cloudinary account and credentials
+
 ## Environment Variables
 
-Create a `.env` file inside `Backend/`.
+Create a `.env` file in `Backend/`.
 
 Example:
 
@@ -100,9 +116,12 @@ DB=nova_mobiles
 P_C=products
 O_C=orders
 JWT_KEY=replace_with_a_secure_secret
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-The backend reads these variables directly in the code:
+Variables read by the backend:
 
 - `PORT`
 - `DB_URL`
@@ -110,12 +129,15 @@ The backend reads these variables directly in the code:
 - `P_C`
 - `O_C`
 - `JWT_KEY`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
 
-## Getting Started
+Cloudinary is configured in [`Backend/Config/cloudinary.js`](/c:/Users/PMLS/Desktop/Nova-Mobiles/Backend/Config/cloudinary.js) and is used for both product images and payment proof uploads.
 
-### 1. Install dependencies
+## Local Development
 
-Run these commands from each app folder:
+Install dependencies in each app:
 
 ```powershell
 cd Backend
@@ -132,62 +154,55 @@ cd Admin
 npm install
 ```
 
-### 2. Start the backend
+Start the backend:
 
 ```powershell
 cd Backend
 npm run dev
 ```
 
-The backend is expected to run on `http://localhost:4000`.
-
-### 3. Start the customer frontend
+Start the storefront:
 
 ```powershell
 cd Frontend
 npm run dev
 ```
 
-### 4. Start the admin app
+Start the admin dashboard:
 
 ```powershell
 cd Admin
 npm run dev
 ```
 
-## API Overview
+Current default local URLs:
 
-### Admin endpoints
+- Frontend Vite dev server: usually `http://localhost:5173`
+- Admin Vite dev server: usually `http://localhost:5174`
+- Backend API: `http://localhost:4000`
 
-- `POST /Ad/prdct/Add`
-- `GET /Ad/prdct/All`
-- `GET /Ad/ordrs/all`
-- `POST /del/prdct/Admn`
-- `POST /Ad/del/ordr`
+## Implementation Notes
 
-### Customer endpoints
+- Both React apps hard-code the API base URL to `http://localhost:4000` in:
+  - [`Frontend/src/ApiCalls/ApiCalls.jsx`](/c:/Users/PMLS/Desktop/Nova-Mobiles/Frontend/src/ApiCalls/ApiCalls.jsx)
+  - [`Admin/src/ApiCalls/ApiCalls.jsx`](/c:/Users/PMLS/Desktop/Nova-Mobiles/Admin/src/ApiCalls/ApiCalls.jsx)
+- The backend still exposes legacy static routes for local files in [`Backend/index.js`](/c:/Users/PMLS/Desktop/Nova-Mobiles/Backend/index.js), but current uploads are stored in Cloudinary and the frontend/admin already use Cloudinary URLs when present.
+- There is no root-level package script that starts all three apps together.
+- There are no automated tests configured yet.
 
-- `GET /get/all/itms`
-- `POST /add/cartdata`
-- `POST /get/cartData`
-- `POST /proceed/Payment`
-- `POST /cancel/ordr`
-- `POST /Add/Address/Smpl`
-- `POST /Add/Address/Bt`
+## Current Risks And Limitations
 
-## Notes About The Current Implementation
+- Product ids are reassigned after deletion in [`Backend/Functions/Functions.js`](/c:/Users/PMLS/Desktop/Nova-Mobiles/Backend/Functions/Functions.js), while cart/order data is also keyed by those ids. Deleting a product can therefore remap existing carts or orders to the wrong products.
+- Loading the admin orders endpoint deletes every order document without `userAdd` first in [`Backend/Controller/Controller.js`](/c:/Users/PMLS/Desktop/Nova-Mobiles/Backend/Controller/Controller.js). That means viewing orders can erase in-progress carts.
+- Frontend and admin API URLs are hard-coded for localhost, so deployment to any non-local environment will require code changes.
+- The admin dashboard has no authentication or authorization layer.
 
-- The frontend and admin apps are currently hard-coded to use `http://localhost:4000` as the API base URL.
-- Product images are stored in `Backend/Products`.
-- Bank transfer proof images are stored in `Backend/Scripts`.
-- The root README was previously only a title, and the app-specific READMEs in `Frontend/` and `Admin/` are still the default Vite template files.
-- There are no automated tests configured right now.
+## Suggested Next Improvements
 
-## Recommended Next Improvements
-
-- Move API base URLs into environment variables for `Frontend` and `Admin`
-- Add validation and better error handling around uploads and form submission
-- Add authentication/authorization for the admin panel
-- Add proper stock validation on checkout
-- Add tests for backend routes and critical frontend flows
-- Replace the default Vite READMEs inside `Frontend/` and `Admin/`
+- Move API base URLs to Vite environment variables.
+- Stop re-numbering product ids; use stable identifiers instead.
+- Separate temporary carts from submitted orders.
+- Add admin authentication and route protection.
+- Add validation and error handling around uploads and checkout.
+- Replace the Vite template READMEs inside `Frontend/` and `Admin/`.
+- Add automated tests for backend routes and the checkout flow.
