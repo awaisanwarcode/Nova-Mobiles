@@ -47,7 +47,6 @@ Frontend routes:
 - Delete processed orders.
 
 Admin routes:
-
 - `/`
 - `/prdct/all`
 - `/ordrs/All`
