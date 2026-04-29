@@ -81,7 +81,7 @@ export const cancalTheOrder = (orderId) => {
         });
 }
 
-export const AddUserAddress = (Address, image, orderId, ordrKey) => {
+export const AddUserAddress = (Address, image, orderId, ordrKey, onSuccess) => {
     if (image) {
         if (Address.payment !== "Bank Transfer" && image) {
             toast.error("Invalid payment method.")
@@ -92,11 +92,13 @@ export const AddUserAddress = (Address, image, orderId, ordrKey) => {
                 }
             }).then((res) => {
                 localStorage.clear();
-                alert("Your order is completed , you can track your order by calling us or you will be informed via your email.")
-                window.location.href = "/";
+                if (onSuccess) {
+                    onSuccess();
+                } else {
+                    window.location.href = "/";
+                }
             }).catch((err) => {
-                alert("Something went wrong. Go Back to home page and try again.");
-                window.location.reload();
+                toast.error("Something went wrong. Please try again.");
             })
         }
     } else {
@@ -106,10 +108,13 @@ export const AddUserAddress = (Address, image, orderId, ordrKey) => {
             axios.post(`${baseUrl}/Add/Address/Smpl`, { Address, orderId, ordrKey })
                 .then((res) => {
                     localStorage.clear();
-                    window.location.href = "/";
-                    alert("Your order is completed , you can track your order by calling us or you will be informed via your email.")
+                    if (onSuccess) {
+                        onSuccess();
+                    } else {
+                        window.location.href = "/";
+                    }
                 }).catch((err) => {
-                    window.location.reload();
+                    toast.error("Something went wrong. Please try again.");
                 })
         }
     }

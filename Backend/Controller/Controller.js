@@ -38,18 +38,36 @@ export const GetAllPrdct = async (req, res) => {
 export const delItmByAdm = async (req, res) => {
     try {
         const image = req.body.image;
-        if (image.startsWith("http")) {
-            // Delete from Cloudinary
-            const publicId = image.split('/').slice(-3).join('/').split('.')[0];
-            await cloudinary.uploader.destroy(publicId);
-        } else {
+        if (image && image.startsWith("http")) {
+            if (image.includes("res.cloudinary.com")) {
+                // Delete from Cloudinary
+                try {
+                    const urlParts = image.split('/');
+                    const uploadIndex = urlParts.findIndex(part => part === 'upload');
+                    const publicIdWithExt = urlParts.slice(uploadIndex + 2).join('/');
+                    const publicId = publicIdWithExt.split('.')[0];
+                    await cloudinary.uploader.destroy(publicId);
+                } catch (cloudinaryError) {
+                    console.error("Error deleting from Cloudinary:", cloudinaryError);
+                }
+            }
+            // If it's http but NOT cloudinary, we just skip image deletion and proceed to DB deletion
+        } else if (image) {
             // Legacy: Delete from local filesystem
-            fs.unlinkSync(`${path.resolve("Products")}/${image}`);
+            try {
+                const filePath = path.join(path.resolve("Products"), image);
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            } catch (fsError) {
+                console.error("Error deleting local file:", fsError);
+            }
         }
         await PColl.deleteOne({ id: req.body.id });
         await fun.correctingSeries(PColl);
         res.json({ success: true });
     } catch (error) {
+        console.error("Error in delItmByAdm:", error);
         res.json({ success: false, message: "Something went wrong." })
     }
 }
@@ -68,21 +86,39 @@ export const GetAllOrdrs = async (req, res) => {
 
 // Function that help to DELETE orders from OColl;
 export const delOrdrByAdm = async (req, res) => {
-    let image = req.body.image
-    if (!image) {
-        await OColl.deleteMany({ orderId: req.body.orderId });
-        res.json({ success: true });
-    } else {
-        if (image.startsWith("http")) {
-            // Delete from Cloudinary
-            const publicId = image.split('/').slice(-3).join('/').split('.')[0];
-            await cloudinary.uploader.destroy(publicId);
-        } else {
-            // Legacy: Delete from local filesystem
-            fs.unlinkSync(`${path.resolve("Scripts")}/${image}`);
+    try {
+        let image = req.body.image
+        if (image) {
+            if (image.startsWith("http")) {
+                if (image.includes("res.cloudinary.com")) {
+                    // Delete from Cloudinary
+                    try {
+                        const urlParts = image.split('/');
+                        const uploadIndex = urlParts.findIndex(part => part === 'upload');
+                        const publicIdWithExt = urlParts.slice(uploadIndex + 2).join('/');
+                        const publicId = publicIdWithExt.split('.')[0];
+                        await cloudinary.uploader.destroy(publicId);
+                    } catch (cloudinaryError) {
+                        console.error("Error deleting order image from Cloudinary:", cloudinaryError);
+                    }
+                }
+            } else {
+                // Legacy: Delete from local filesystem
+                try {
+                    const filePath = path.join(path.resolve("Scripts"), image);
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
+                } catch (fsError) {
+                    console.error("Error deleting local order image:", fsError);
+                }
+            }
         }
         await OColl.deleteMany({ orderId: req.body.orderId });
         res.json({ success: true });
+    } catch (error) {
+        console.error("Error in delOrdrByAdm:", error);
+        res.json({ success: false, message: "Something went wrong." });
     }
 }
 

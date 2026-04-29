@@ -19,9 +19,14 @@ export const AddItems = () => {
     }
     const formSubmission = (e) => {
         e.preventDefault();
-        (image) ? data["image"] = image : data;
-        let formData = new FormData;
-        formData = data;
+        const formData = new FormData();
+        formData.append("productName", data.productName);
+        formData.append("productCompany", data.productCompany);
+        formData.append("productNum", data.productNum);
+        formData.append("productPrice", data.productPrice);
+        if (image) {
+            formData.append("image", image);
+        }
         AddProduct(formData);
         setData({
             productName: "",

@@ -2,6 +2,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "./deliveryform.css";
 import { useState } from "react";
 import { AddUserAddress, cancalTheOrder } from "../../ApiCalls/ApiCalls";
+import { SuccessModal } from "../../Components/SuccessModal/SuccessModal";
+import { useNavigate } from "react-router-dom";
 
 export const DeliveryForm = () => {
     let [image, setImage] = useState(undefined);
@@ -18,6 +20,8 @@ export const DeliveryForm = () => {
         postal: "",
         payment: ""
     });
+    let [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
     const changeHandler = (e) => {
         let name = e.target.name;
         let value = e.target.value;
@@ -27,8 +31,8 @@ export const DeliveryForm = () => {
     const formSubmission = (e) => {
         e.preventDefault();
         (!image) ? image = undefined : image;
-        if (orderId, ordrKey) {
-            AddUserAddress(data, image, orderId, ordrKey)
+        if (orderId && ordrKey) {
+            AddUserAddress(data, image, orderId, ordrKey, () => setIsModalOpen(true))
         } else {
             toast.warning("Invalid attempt , try again");
         }
@@ -36,6 +40,7 @@ export const DeliveryForm = () => {
     return (
         <>
             <ToastContainer />
+            <SuccessModal isOpen={isModalOpen} onClose={() => navigate("/")} />
             <header>
             </header>
             <main className="container">

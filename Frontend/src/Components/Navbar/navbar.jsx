@@ -9,6 +9,7 @@ export const Navbar = () => {
         <>
             <nav className="usuall-Nav">
                 <div className="nav-left" onClick={() => window.location.href = "/"}>
+                    <img src="/logo_horizontal.png" alt="Nova Mobiles Logo" className="logo-img" />
                 </div>
                 {(!sideNav)
                     ?

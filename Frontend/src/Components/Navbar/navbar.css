@@ -82,15 +82,16 @@ nav {
 .nav-left {
     margin-top: 5px;
     display: flex;
-    flex-direction: column;
-    gap: 5px;
-    color: whitesmoke;
-    background-image: url("http://localhost:4000/pr0ducts/ShopLogo-white-png.png");
-    background-repeat: no-repeat;
-    background-size: contain;
+    align-items: center;
     cursor: pointer;
     height: 40px;
-    width: 130px;
+}
+
+.logo-img {
+    height: 100%;
+    max-width: 180px;
+    width: auto;
+    object-fit: contain;
 }
 
 .nav-right {
@@ -167,9 +168,8 @@ nav {
     .nav-left {
         margin-left: 3px;
         border-radius: 20px;
-        background-image: url("http://localhost:4000/pr0ducts/ShopLogo-png.png");
-        background-size: contain;
         padding: 4px;
+        height: 35px;
     }
 
     .nav-right {

@@ -5,8 +5,8 @@ export const Footer = () => {
             <footer>
                 <div className="footer-top-div">
                     <div className="footer-first-div">
-                        <h2>PhoneShop.</h2>
-                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Illo adipisci eligendi numquam ad voluptatem alias voluptatum facere sapiente libero, fugiat totam amet architecto cupiditate, consequatur sunt harum accusamus explicabo aliquam!</p>
+                        <h2>NovaMobiles.</h2>
+                        <p>At NovaMobiles, we are committed to bringing you the most advanced mobile technology from the world's leading brands, including Samsung, Apple, Vivo, Oppo, and more. Our mission is to provide an unparalleled shopping experience, offering the perfect balance of style, performance, and affordability. Whether you are looking for the latest flagship smartphone, a budget-friendly powerhouse, or premium accessories, we deal in a wide variety of mobile solutions tailored to your unique needs.</p>
                     </div>
                     <div className="footer-sec-div">
                         <h3>Famous Products</h3>
